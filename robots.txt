@@ -1,0 +1,16 @@
+# 노벨짐 24 채용 사이트
+#
+# ⚠️ 오픈 준비 중 — 전체 검색 노출을 막아둔 상태입니다.
+#    실제 정보로 교체하고 정식 오픈할 때 아래 두 줄을 지우고
+#    그 아래 "정식 오픈용" 블록의 주석을 해제하세요.
+#    (netlify.toml 의 X-Robots-Tag 한 줄도 함께 지워야 합니다)
+
+User-agent: *
+Disallow: /
+
+# ---------- 정식 오픈용 (준비되면 위 두 줄과 교체) ----------
+# User-agent: *
+# Allow: /
+# Disallow: /admin/
+#
+# Sitemap: https://예정도메인/sitemap.xml
