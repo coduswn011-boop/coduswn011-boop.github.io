@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>노벨짐 24 — 채용 어드민</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- ===== 로그인 게이트 ===== -->
+  <div class="gate" id="gate">
+    <div class="gate-box">
+      <div class="medal">N</div>
+      <h1>노벨짐 채용 어드민</h1>
+      <p>관리자 비밀번호를 입력하세요</p>
+      <input type="password" id="gatePw" placeholder="••••••••" autocomplete="current-password" />
+      <button class="btn btn-gold" style="width:100%" id="gateBtn">입장</button>
+      <p class="gate-hint" id="gateHint"></p>
+    </div>
+  </div>
+
+  <!-- ===== 앱 ===== -->
+  <div class="app" id="app">
+    <header class="topbar">
+      <div class="topbar-in">
+        <a class="logo" href="../index.html">
+          <span class="badge">N</span>
+          <span>NOBEL GYM<small>ADMIN</small></span>
+        </a>
+        <nav class="tabs">
+          <button class="tab on" data-page="dash">대시보드</button>
+          <button class="tab" data-page="jobs">공고 관리</button>
+          <button class="tab" data-page="pipe">지원자 파이프라인</button>
+        </nav>
+        <div class="top-actions">
+          <span class="mode-badge" id="modeBadge"></span>
+          <button class="btn btn-sm" id="btnSync" hidden>새로고침</button>
+          <button class="btn btn-sm" id="btnPublish" hidden>공고 발행</button>
+          <button class="btn btn-sm" id="btnExport">내보내기</button>
+          <button class="btn btn-sm" id="btnImport">가져오기</button>
+          <button class="btn btn-sm btn-danger" id="btnReset">초기화</button>
+          <a class="btn btn-sm btn-gold" href="../index.html" target="_blank" id="btnEditSite">✏️ 사이트 편집</a>
+          <a class="btn btn-sm" href="../index.html" target="_blank">사이트 보기 ↗</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+
+      <!-- ===== 대시보드 ===== -->
+      <section class="page on" id="page-dash">
+        <div class="page-head">
+          <div>
+            <h2>대시보드</h2>
+            <p>오늘 기준 채용 현황 요약입니다.</p>
+          </div>
+        </div>
+        <div class="stat-row" id="statRow"></div>
+
+        <div class="page-head" style="margin-top:10px">
+          <div><h2 style="font-size:17px">마감 임박 공고 (D-7 이내)</h2></div>
+        </div>
+        <div class="table-box">
+          <table>
+            <thead><tr><th>공고명</th><th>직무</th><th>지점</th><th>마감</th><th>지원자</th></tr></thead>
+            <tbody id="soonBody"></tbody>
+          </table>
+        </div>
+
+        <div class="page-head" style="margin-top:30px">
+          <div><h2 style="font-size:17px">최근 지원자</h2></div>
+        </div>
+        <div class="table-box">
+          <table>
+            <thead><tr><th>이름</th><th>직무</th><th>지점</th><th>경력</th><th>단계</th><th>접수일</th></tr></thead>
+            <tbody id="recentBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== 공고 관리 ===== -->
+      <section class="page" id="page-jobs">
+        <div class="page-head">
+          <div>
+            <h2>공고 관리</h2>
+            <p>공고를 등록하면 채용 사이트에 즉시 반영됩니다. 마감일이 지난 공고는 사이트에서 자동으로 숨겨집니다.</p>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-gold" id="btnNewJob">+ 새 공고 등록</button>
+        </div>
+
+        <div class="filterbar">
+          <select id="jfRole"></select>
+          <select id="jfBranch"></select>
+          <select id="jfStatus">
+            <option value="all">전체 상태</option>
+            <option value="live">게시중</option>
+            <option value="closed">마감</option>
+          </select>
+          <input type="search" id="jfQuery" placeholder="공고명 검색" />
+        </div>
+
+        <div class="table-box">
+          <table>
+            <thead>
+              <tr><th>상태</th><th>공고명</th><th>직무</th><th>지점</th><th>형태</th><th>인원</th><th>마감일</th><th>지원자</th><th></th></tr>
+            </thead>
+            <tbody id="jobBody"></tbody>
+          </table>
+          <div class="empty" id="jobEmpty" hidden>조건에 맞는 공고가 없습니다.</div>
+        </div>
+      </section>
+
+      <!-- ===== 지원자 파이프라인 ===== -->
+      <section class="page" id="page-pipe">
+        <div class="page-head">
+          <div>
+            <h2>지원자 파이프라인</h2>
+            <p>카드를 드래그하거나 ◀ ▶ 버튼으로 단계를 이동하세요. 카드를 클릭하면 상세를 편집할 수 있습니다.</p>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-gold" id="btnNewApp">+ 지원자 직접 추가</button>
+        </div>
+
+        <div class="filterbar">
+          <select id="afRole"></select>
+          <select id="afBranch"></select>
+          <input type="search" id="afQuery" placeholder="이름 · 연락처 검색" />
+        </div>
+
+        <div class="kanban" id="kanban"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== 공고 편집 모달 ===== -->
+  <div class="modal-back" id="jobModal" hidden>
+    <div class="modal">
+      <div class="modal-head"><h3 id="jmTitle">공고 등록</h3><button id="jmClose" aria-label="닫기">×</button></div>
+      <div class="modal-body">
+        <div class="fld">
+          <label>공고명 *</label>
+          <input type="text" id="jTitle" placeholder="예) PT 트레이너 채용 — 문정점" />
+        </div>
+        <div class="frm-row-3">
+          <div class="fld"><label>직무 *</label><select id="jRole"></select></div>
+          <div class="fld"><label>지점 *</label><select id="jBranch"></select></div>
+          <div class="fld"><label>고용 형태 *</label><select id="jType"></select></div>
+        </div>
+        <div class="frm-row-3">
+          <div class="fld"><label>모집 인원</label><input type="number" id="jHead" min="1" value="1" /></div>
+          <div class="fld"><label>게시일</label><input type="date" id="jPosted" /></div>
+          <div class="fld"><label>마감일 *</label><input type="date" id="jDeadline" /></div>
+        </div>
+        <div class="fld"><label>보상 조건</label><input type="text" id="jSalary" placeholder="예) 월 260~300만원 + 전환 인센티브" /></div>
+        <div class="fld"><label>공고 설명 *</label><textarea id="jDesc" placeholder="포지션 소개를 입력하세요."></textarea></div>
+        <div class="frm-row">
+          <div class="fld"><label>담당 업무 (줄바꿈으로 구분)</label><textarea id="jDuties"></textarea></div>
+          <div class="fld"><label>자격 요건 (줄바꿈으로 구분)</label><textarea id="jRequires"></textarea></div>
+        </div>
+        <div class="frm-row">
+          <div class="fld"><label>우대 사항 (줄바꿈으로 구분)</label><textarea id="jPrefers"></textarea></div>
+          <div class="fld"><label>태그 (쉼표로 구분)</label><input type="text" id="jTags" placeholder="인센티브, 정규직" /></div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-danger" id="jmDelete">삭제</button>
+        <span class="spacer"></span>
+        <button class="btn" id="jmCancel">취소</button>
+        <button class="btn btn-gold" id="jmSave">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 지원자 편집 모달 ===== -->
+  <div class="modal-back" id="appModal" hidden>
+    <div class="modal">
+      <div class="modal-head"><h3 id="amTitle">지원자 상세</h3><button id="amClose" aria-label="닫기">×</button></div>
+      <div class="modal-body">
+        <div class="frm-row">
+          <div class="fld"><label>이름 *</label><input type="text" id="aName" /></div>
+          <div class="fld"><label>연락처 *</label><input type="tel" id="aPhone" placeholder="010-0000-0000" /></div>
+        </div>
+        <div class="frm-row">
+          <div class="fld"><label>이메일</label><input type="email" id="aEmail" /></div>
+          <div class="fld"><label>경력</label><input type="text" id="aCareer" placeholder="예) 3년 / 신입" /></div>
+        </div>
+        <div class="frm-row-3">
+          <div class="fld"><label>지원 직무</label><select id="aRole"></select></div>
+          <div class="fld"><label>희망 지점</label><select id="aBranch"></select></div>
+          <div class="fld"><label>단계</label><select id="aStage"></select></div>
+        </div>
+        <div class="fld"><label>지원 공고</label><select id="aJob"></select></div>
+        <div class="fld">
+          <label>메모</label>
+          <textarea id="aMemo" placeholder="면접 일정, 특이사항, 처우 협의 내용 등"></textarea>
+          <p class="hint">면접 후 평가 코멘트를 남겨두면 파이프라인 카드에 요약이 표시됩니다.</p>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-danger" id="amDelete">삭제</button>
+        <span class="spacer"></span>
+        <button class="btn" id="amCancel">취소</button>
+        <button class="btn btn-gold" id="amSave">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/store.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
